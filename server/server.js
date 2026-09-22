@@ -15,15 +15,25 @@ const FRONTEND_DIR = path.join(__dirname, '..');
 app.use(cors());
 app.use(express.json({ limit: '20mb' }));
 
-// Root API status endpoint
+// Serve frontend static assets (CSS, JS, assets)
+app.use(express.static(FRONTEND_DIR));
+
+// Root endpoint: Pisahkan perilaku berdasarkan Host header
 app.get('/', (req, res) => {
-  res.json({
-    status: 'online',
-    service: 'AL BAYAN HIDAYATULLAH MAKASSAR Accounting REST API',
-    version: '1.0.0',
-    healthCheck: '/api/health'
-  });
+  const host = (req.headers.host || '').toLowerCase();
+  // 1. Jika diakses lewat api.* -> Tampilkan status JSON API murni
+  if (host.startsWith('api.')) {
+    return res.json({
+      status: 'online',
+      service: 'AL BAYAN HIDAYATULLAH MAKASSAR Accounting REST API',
+      version: '1.0.0',
+      healthCheck: '/api/health'
+    });
+  }
+  // 2. Jika diakses lewat domain utama (accalbayan.com) atau localhost -> Tampilkan Frontend UI
+  res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
 });
+
 
 
 // 1. Health check
@@ -459,6 +469,16 @@ app.post('/api/sync/from-local', async (req, res) => {
   } finally {
     conn.release();
   }
+});
+
+// Fallback untuk rute non-API
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  const host = (req.headers.host || '').toLowerCase();
+  if (host.startsWith('api.')) {
+    return res.status(404).json({ error: 'API Endpoint not found' });
+  }
+  res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {
