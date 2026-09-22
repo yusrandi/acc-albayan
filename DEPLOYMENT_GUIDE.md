@@ -82,12 +82,12 @@ Upload file via Git, SCP, atau SFTP ke folder tersebut.
 ### B. Import Database Schema
 Jalankan file skema SQL ke database yang sudah dibuat:
 ```bash
-mysql -u albayan_user -p al_bayan_accounting < /var/www/albayan-accounting/database/schema.sql
+mysql -u albayan_user -p al_bayan_accounting < /home/ubuntu/acc-albayan/database/schema.sql
 ```
 
 ### C. Install Dependencies Backend
 ```bash
-cd /var/www/albayan-accounting/server
+cd /home/ubuntu/acc-albayan/server
 npm install --omit=dev
 ```
 
@@ -116,7 +116,7 @@ Simpan dengan `Ctrl + O`, lalu keluar dengan `Ctrl + X`.
 
 Kembali ke root project:
 ```bash
-cd /var/www/albayan-accounting
+cd /home/ubuntu/acc-albayan
 pm2 start ecosystem.config.js --env production
 pm2 save
 pm2 startup
@@ -135,7 +135,7 @@ pm2 logs albayan-accounting
 
 Salin template konfigurasi:
 ```bash
-sudo cp /var/www/albayan-accounting/deploy/nginx.conf /etc/nginx/sites-available/albayan
+sudo cp /home/ubuntu/acc-albayan/deploy/nginx.conf /etc/nginx/sites-available/albayan
 sudo nano /etc/nginx/sites-available/albayan
 ```
 Ganti `your-domain.com` dengan nama domain Anda (atau biarkan IP VPS).
