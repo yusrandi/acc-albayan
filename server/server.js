@@ -15,8 +15,15 @@ const FRONTEND_DIR = path.join(__dirname, '..');
 app.use(cors());
 app.use(express.json({ limit: '20mb' }));
 
-// Serve frontend static files
-app.use(express.static(FRONTEND_DIR));
+// Root API status endpoint
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    service: 'AL BAYAN HIDAYATULLAH MAKASSAR Accounting REST API',
+    version: '1.0.0',
+    healthCheck: '/api/health'
+  });
+});
 
 
 // 1. Health check
@@ -452,12 +459,6 @@ app.post('/api/sync/from-local', async (req, res) => {
   } finally {
     conn.release();
   }
-});
-
-// Fallback: layani index.html untuk semua rute non-API (SPA)
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {
