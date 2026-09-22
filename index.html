@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AL BAYAN HIDAYATULLAH MAKASSAR — Sistem Keuangan & Anggaran</title>
+  
+  <!-- Modular Design System Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+
+  <!-- 1. Login Screen Overlay -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <div class="login-brand">AL BAYAN <span>WINPRO ACC</span></div>
+      <div class="login-sub">Sistem Informasi Akuntansi & Laporan Keuangan</div>
+      <div class="form">
+        <div class="field">
+          <label>Username</label>
+          <input id="loginUser" autocomplete="username" placeholder="Masukkan username">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input id="loginPass" type="password" autocomplete="current-password" placeholder="Masukkan password" onkeydown="if(event.key==='Enter')login()">
+        </div>
+        <button class="btn primary" style="width:100%;margin-top:5px" onclick="login()">Masuk</button>
+        <div id="loginMsg" style="font-size:12px;color:#b42318;margin-top:10px"></div>
+      </div>
+      <div style="font-size:11px;color:#98a2b3;margin-top:18px">
+        Login awal: <b>admin</b> / <b>admin123</b>. Segera perbarui password melalui Pengaturan.
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Main Application Shell -->
+  <div class="app">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">AL BAYAN <span>WINPRO ACC</span></div>
+      <div class="nav">
+        <small>Monitoring</small>
+        <button class="active" data-page="dashboard">▣ Dashboard</button>
+        <button data-page="evaluation">◈ Evaluasi & Rasio</button>
+
+        <small>Transaksi</small>
+        <button data-page="journal">✎ Jurnal Umum</button>
+        <button data-page="ledger">▤ Buku Besar</button>
+        <button data-page="cash">◉ Kas & Bank</button>
+
+        <small>Laporan Keuangan</small>
+        <button data-page="trial">▦ Neraca Saldo</button>
+        <button data-page="income">▥ Laba Rugi</button>
+        <button data-page="balance">▤ Posisi Keuangan (Neraca)</button>
+        <button data-page="cashflow">↕ Arus Kas</button>
+        <button data-page="equity">◎ Perubahan Ekuitas</button>
+
+        <small>Master & Sistem</small>
+        <button data-page="budget">◫ Anggaran vs Realisasi</button>
+        <button data-page="assets">▣ Manajemen Aset Tetap</button>
+        <button data-page="coa">☷ Bagan Akun (COA)</button>
+        <button data-page="settings">⚙ Pengaturan Entitas</button>
+        <button data-page="exports">⇩ Export / Import Laporan</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main">
+      <!-- Top Action Bar -->
+      <div class="top">
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <div id="periodText" style="font-size:12px;color:#667085;margin-top:2px"></div>
+        </div>
+        <div class="actions">
+          <span id="dbModeBadge" class="mini-badge" style="cursor:pointer" onclick="showPage('settings')">🟢 Memeriksa DB...</span>
+          <div class="userbar">
+            <span class="userchip" id="currentUser">admin</span>
+            <button class="btn" onclick="openPassword()">🔐 Sandi</button>
+            <button class="btn danger" onclick="logout()">↪ Keluar</button>
+          </div>
+          <button class="btn good" onclick="openAutoJournal()">⚡ Transaksi Cepat</button>
+          <button class="btn" onclick="exportData()">Backup JSON</button>
+          <button class="btn" onclick="document.getElementById('importFile').click()">Restore</button>
+          <input id="importFile" type="file" accept=".json" hidden>
+        </div>
+      </div>
+
+      <!-- PAGE 1: Dashboard -->
+      <section id="dashboard" class="page active">
+        <div class="dash-head">
+          <div>
+            <div class="dash-kicker">AL BAYAN HIDAYATULLAH MAKASSAR</div>
+            <h2>DASHBOARD KEUANGAN</h2>
+            <p id="dashSubtitle">Ringkasan penerimaan pendidikan, beban, posisi aset, dan kesehatan keuangan secara real-time.</p>
+          </div>
+          <div class="dash-period"><span>PERIODE</span><b id="dashPeriod">-</b></div>
+        </div>
+
+        <div class="kpi-grid dash-kpis">
+          <div class="kpi kpi-primary"><div class="kpi-top"><div class="icon">💰</div><span class="kpi-tag">LIKUIDITAS</span></div><div class="label">Kas & Bank</div><div class="value" id="mCash">Rp0</div><div class="trend" id="cashInfo">Saldo kas tersedia</div></div>
+          <div class="kpi"><div class="kpi-top"><div class="icon">🏫</div><span class="kpi-tag">PERIODE</span></div><div class="label">Penerimaan/Pendapatan</div><div class="value" id="mRevenue">Rp0</div><div class="trend" id="revenueInfo">Periode berjalan</div></div>
+          <div class="kpi"><div class="kpi-top"><div class="icon">↘</div><span class="kpi-tag">PERIODE</span></div><div class="label">Beban Operasional</div><div class="value" id="mExpense">Rp0</div><div class="trend" id="expenseInfo">Periode berjalan</div></div>
+          <div class="kpi"><div class="kpi-top"><div class="icon">◈</div><span class="kpi-tag">HASIL</span></div><div class="label">Surplus/(Defisit)</div><div class="value" id="mProfit">Rp0</div><div class="trend" id="profitPct">Margin 0%</div></div>
+          <div class="kpi"><div class="kpi-top"><div class="icon">▣</div><span class="kpi-tag">POSISI</span></div><div class="label">Total Aset</div><div class="value" id="mAssets">Rp0</div><div class="trend">Posisi akhir periode</div></div>
+          <div class="kpi"><div class="kpi-top"><div class="icon">✓</div><span class="kpi-tag">KONTROL</span></div><div class="label">Status Neraca</div><div class="value small" id="mBalanceStatus">SEIMBANG</div><div class="trend" id="balanceInfo">Aset = Liabilitas + Ekuitas</div></div>
+        </div>
+
+        <div class="dashboard-grid dash-main">
+          <div class="card chart-card">
+            <div class="card-head"><div><h3>Posisi Keuangan</h3><p>Aset, liabilitas dan ekuitas pada posisi saat ini</p></div><span class="mini-badge">REAL-TIME</span></div>
+            <div class="chart-box tall"><canvas id="balanceChart" height="240"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Komposisi Penerimaan & Beban</h3><p>Perbandingan nilai periode berjalan</p></div></div>
+            <div id="financeMix" class="finance-mix"></div>
+          </div>
+        </div>
+
+        <div class="grid g2 section ranking-grid">
+          <div class="card ranking-card">
+            <div class="card-head"><div><h3>Ranking Penerimaan/Pendapatan</h3><p>Akun penerimaan terbesar pada periode berjalan</p></div><span class="mini-badge">TOP 10</span></div>
+            <div id="incomeRanking"></div>
+          </div>
+          <div class="card ranking-card">
+            <div class="card-head"><div><h3>Ranking Pengeluaran/Beban</h3><p>Akun beban terbesar pada periode berjalan</p></div><span class="mini-badge">TOP 10</span></div>
+            <div id="expenseRanking"></div>
+          </div>
+        </div>
+
+        <div class="card section ranking-chart-card">
+          <div class="card-head"><div><h3>Grafik Ranking Keuangan</h3><p>Perbandingan akun berdasarkan nilai dan kontribusi kelompok</p></div></div>
+          <div id="rankingBars"></div>
+        </div>
+
+        <div id="dashboardBudgetVsRealization" class="card section dashboard-budget-card">
+          <div class="card-head">
+            <div><h3>Anggaran VS Realisasi</h3><p>Ringkasan rencana, realisasi, sisa anggaran, dan tingkat penyerapan</p></div>
+            <button class="btn" onclick="showPage('budget')">Lihat Detail →</button>
+          </div>
+          <div class="budget-dash-kpis">
+            <div><span>Total Anggaran</span><b id="dashBudgetPlan">Rp0</b></div>
+            <div><span>Total Realisasi</span><b id="dashBudgetActual">Rp0</b></div>
+            <div><span>Penyerapan</span><b id="dashBudgetPct">0%</b></div>
+            <div><span>Sisa Anggaran</span><b id="dashBudgetRemain">Rp0</b></div>
+          </div>
+          <div class="grid g2 budget-dash-grid">
+            <div>
+              <div class="budget-dash-title">Grafik Anggaran VS Realisasi</div>
+              <div id="dashBudgetBars"></div>
+            </div>
+            <div>
+              <div class="budget-dash-title">Persentase Penyerapan</div>
+              <div class="dash-budget-donut-wrap">
+                <div id="dashBudgetDonut" class="dash-budget-donut"><div><b>0%</b><span>Realisasi</span></div></div>
+                <div id="dashBudgetLegend" class="budget-dash-legend"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section" id="dashboardCentralInfo">
+          <div class="card-head">
+            <div><h3>Pusat Informasi Sistem</h3><p>Status data dan validasi integritas pembukuan</p></div>
+            <span class="mini-badge" id="systemHealthBadge">SIAP</span>
+          </div>
+          <div class="central-info-grid" id="centralInfoGrid"></div>
+        </div>
+
+        <div class="grid g3 section dash-lower">
+          <div class="card"><div class="card-head"><div><h3>Kontrol Akuntansi</h3><p>Validasi kondisi laporan</p></div></div><div id="alerts"></div></div>
+          <div class="card"><div class="card-head"><div><h3>Ringkasan Posisi</h3><p>Snapshot keuangan yayasan</p></div></div><div id="summary"></div></div>
+          <div class="card"><div class="card-head"><div><h3>Aktivitas Transaksi</h3><p>Distribusi berdasarkan kategori</p></div></div><div id="activity"></div></div>
+        </div>
+
+        <div class="card section">
+          <div class="card-head">
+            <div><h3>Transaksi Terbaru</h3><p>Jurnal terakhir yang tercatat dalam sistem</p></div>
+            <button class="btn primary" onclick="openAutoJournal()">＋ Transaksi</button>
+          </div>
+          <div id="recent"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 2: Evaluasi & Rasio -->
+      <section id="evaluation" class="page">
+        <div class="grid g4" id="ratios"></div>
+        <div class="card section">
+          <h3>Evaluasi Kinerja Keuangan</h3>
+          <div id="evaluationText"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 3: Jurnal Umum -->
+      <section id="journal" class="page">
+        <div class="card">
+          <div class="toolbar">
+            <button class="btn primary" onclick="openJournal()">+ Jurnal Manual</button>
+            <button class="btn good" onclick="openAutoJournal()">⚡ Jurnal Otomatis</button>
+            <button class="btn" onclick="exportCurrentReportExcel('journalTable','Jurnal Umum')">Excel</button>
+            <button class="btn" onclick="exportCurrentReportPDF('journalTable','Jurnal Umum')">PDF</button>
+            <input id="journalSearch" placeholder="Cari nomor, tanggal, deskripsi..." oninput="renderJournal()">
+          </div>
+          <div id="journalTable"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 4: Buku Besar -->
+      <section id="ledger" class="page">
+        <div class="card">
+          <div class="toolbar">
+            <select id="ledgerAccount" onchange="renderLedger()"></select>
+            <button class="btn" onclick="exportCurrentReportExcel('ledgerTable','Buku Besar')">Excel</button>
+            <button class="btn" onclick="exportCurrentReportPDF('ledgerTable','Buku Besar')">PDF</button>
+          </div>
+          <div id="ledgerTable"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 5: Kas & Bank -->
+      <section id="cash" class="page">
+        <div class="card">
+          <div class="toolbar">
+            <button class="btn primary" onclick="openJournal(true)">+ Transaksi Kas/Bank</button>
+            <button class="btn" onclick="exportCurrentReportExcel('cashTable','Kas dan Bank')">Excel</button>
+            <button class="btn" onclick="exportCurrentReportPDF('cashTable','Kas dan Bank')">PDF</button>
+          </div>
+          <div id="cashTable"></div>
+        </div>
+
+        <div id="cashFlowVisuals" class="cashflow-visuals section">
+          <div class="grid g2">
+            <div class="card">
+              <div class="card-head"><div><h3>Komposisi Arus Kas</h3><p>Perbandingan arus kas masuk dan keluar</p></div><span class="mini-badge">%</span></div>
+              <div id="cashFlowBars"></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h3>Persentase Arus Kas</h3><p>Proporsi kas masuk, kas keluar, dan neto</p></div></div>
+              <div id="cashFlowPercentChart" class="cash-percent-chart"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 6: Neraca Saldo -->
+      <section id="trial" class="page">
+        <div class="card">
+          <div class="toolbar">
+            <input type="date" id="trialFrom" onchange="renderReports()">
+            <input type="date" id="trialTo" onchange="renderReports()">
+            <button class="btn" onclick="exportCurrentReportPDF('trialTable','Neraca Saldo')">PDF</button>
+            <button class="btn" onclick="exportCurrentReportExcel('trialTable','Neraca Saldo')">Excel</button>
+          </div>
+          <div id="trialTable"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 7: Laba Rugi -->
+      <section id="income" class="page">
+        <div class="card">
+          <div class="toolbar">
+            <button class="btn" onclick="exportCurrentReportPDF('incomeTable','Laba Rugi')">PDF</button>
+            <button class="btn" onclick="exportCurrentReportExcel('incomeTable','Laba Rugi')">Excel</button>
+          </div>
+          <div id="incomeTable"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 8: Neraca -->
+      <section id="balance" class="page">
+        <div class="card">
+          <div class="toolbar">
+            <button class="btn" onclick="exportCurrentReportPDF('balanceTable','Neraca')">PDF</button>
+            <button class="btn" onclick="exportCurrentReportExcel('balanceTable','Neraca')">Excel</button>
+          </div>
+          <div id="balanceTable"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 9: Arus Kas -->
+      <section id="cashflow" class="page">
+        <div class="card">
+          <div class="toolbar">
+            <button class="btn" onclick="exportCurrentReportPDF('cashflowTable','Arus Kas')">PDF</button>
+            <button class="btn" onclick="exportCurrentReportExcel('cashflowTable','Arus Kas')">Excel</button>
+          </div>
+          <div id="cashflowTable"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 10: Perubahan Ekuitas -->
+      <section id="equity" class="page">
+        <div class="card">
+          <div class="toolbar">
+            <button class="btn" onclick="exportCurrentReportPDF('equityTable','Perubahan Ekuitas')">PDF</button>
+            <button class="btn" onclick="exportCurrentReportExcel('equityTable','Perubahan Ekuitas')">Excel</button>
+          </div>
+          <div id="equityTable"></div>
+        </div>
+
+        <div id="equityVisuals" class="equity-visuals section">
+          <div class="grid g2">
+            <div class="card">
+              <div class="card-head"><div><h3>Komposisi Ekuitas / Dana</h3><p>Nilai dan persentase setiap akun ekuitas</p></div><span class="mini-badge">%</span></div>
+              <div id="equityBars"></div>
+            </div>
+            <div class="card">
+              <div class="card-head"><div><h3>Grafik Persentase Ekuitas</h3><p>Distribusi kontribusi akun terhadap total ekuitas</p></div></div>
+              <div id="equityPercentChart" class="equity-percent-chart"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 11: Anggaran vs Realisasi -->
+      <section id="budget" class="page">
+        <div class="dash-head">
+          <div>
+            <div class="dash-kicker">AL BAYAN HIDAYATULLAH MAKASSAR</div>
+            <h2>ANGGARAN VS REALISASI</h2>
+            <p>Monitoring rencana anggaran program, realisasi belanja, selisih, dan persentase penyerapan.</p>
+          </div>
+          <div class="toolbar">
+            <button class="btn primary" onclick="openBudgetForm()">＋ Tambah Anggaran</button>
+            <button class="btn" onclick="exportCurrentReportExcel('budgetTable','Anggaran vs Realisasi')">Excel</button>
+            <button class="btn" onclick="exportCurrentReportPDF('budgetTable','Anggaran vs Realisasi')">PDF</button>
+          </div>
+        </div>
+
+        <div class="kpi-grid budget-kpis">
+          <div class="kpi"><div class="label">Total Anggaran</div><div class="value" id="budgetPlan">Rp0</div><div class="trend">Rencana periode</div></div>
+          <div class="kpi"><div class="label">Total Realisasi</div><div class="value" id="budgetActual">Rp0</div><div class="trend">Realisasi tercatat</div></div>
+          <div class="kpi"><div class="label">Penyerapan</div><div class="value" id="budgetPct">0%</div><div class="trend">Realisasi ÷ Anggaran</div></div>
+          <div class="kpi"><div class="label">Sisa Anggaran</div><div class="value" id="budgetRemain">Rp0</div><div class="trend">Anggaran − Realisasi</div></div>
+        </div>
+
+        <div class="grid g2 section">
+          <div class="card">
+            <div class="card-head"><div><h3>Grafik Anggaran vs Realisasi</h3><p>Perbandingan rencana dan realisasi per program</p></div></div>
+            <div id="budgetChart"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Persentase Penyerapan</h3><p>Distribusi realisasi terhadap rencana</p></div></div>
+            <div id="budgetDonut" class="budget-donut-wrap"></div>
+          </div>
+        </div>
+
+        <div class="card section">
+          <div id="budgetTable"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 12: Manajemen Aset Tetap -->
+      <section id="assets" class="page">
+        <div class="dash-head">
+          <div>
+            <div class="dash-kicker">AL BAYAN HIDAYATULLAH MAKASSAR</div>
+            <h2>MANAJEMEN ASET TETAP</h2>
+            <p>Register aset, perolehan, penyusutan sistematis SAK EP, nilai buku, dan jadwal penyusutan.</p>
+          </div>
+          <button class="btn primary" onclick="openAssetForm()">＋ Tambah Aset</button>
+        </div>
+
+        <div class="kpi-grid asset-kpis">
+          <div class="kpi"><div class="label">Nilai Perolehan</div><div class="value" id="assetCostKpi">Rp0</div><div class="trend">Aset tetap terdaftar</div></div>
+          <div class="kpi"><div class="label">Akumulasi Penyusutan</div><div class="value" id="assetAccumKpi">Rp0</div><div class="trend">Sampai periode aktif</div></div>
+          <div class="kpi"><div class="label">Nilai Buku</div><div class="value" id="assetBookKpi">Rp0</div><div class="trend">Perolehan − akumulasi</div></div>
+          <div class="kpi"><div class="label">Beban Penyusutan Periode</div><div class="value" id="assetPeriodDepKpi">Rp0</div><div class="trend">Jurnal penyusutan periode</div></div>
+        </div>
+
+        <div class="grid g2 section">
+          <div class="card">
+            <div class="card-head">
+              <div><h3>Kontrol Penyusutan</h3><p>Posting penyusutan periodik ke jurnal umum</p></div>
+              <button class="btn good" onclick="postAllAssetDepreciation()">⚡ Posting Penyusutan Periode</button>
+            </div>
+            <div id="assetDepSummary"></div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div><h3>Dasar Akuntansi</h3><p>Konfigurasi standar dan kebijakan aset</p></div></div>
+            <div class="notice">SAK EP Bab 17: penyusutan dimulai ketika aset tersedia untuk digunakan, dialokasikan secara sistematis selama umur manfaat, menggunakan metode garis lurus, saldo menurun, atau unit produksi.</div>
+          </div>
+        </div>
+
+        <div class="card section">
+          <div class="card-head"><div><h3>Register Aset Tetap</h3><p>Register aset lengkap dengan aksi posting dan audit</p></div>
+            <div class="toolbar">
+              <input id="assetSearch" placeholder="Cari kode, nama, lokasi..." oninput="renderAssets()">
+              <select id="assetStatusFilter" onchange="renderAssets()">
+                <option value="">Semua status</option>
+                <option>Aktif</option>
+                <option>Dilepas</option>
+                <option>Fully Depreciated</option>
+              </select>
+              <button class="btn" onclick="exportAssetsCSV()">Export CSV</button>
+              <button class="btn" onclick="exportAssetsJSON()">Export JSON</button>
+              <button class="btn good" onclick="document.getElementById('assetImportFile').click()">Import Massal</button>
+              <input id="assetImportFile" type="file" accept=".csv,.json" hidden>
+            </div>
+          </div>
+          <div id="assetTable"></div>
+        </div>
+
+        <div class="card section">
+          <div class="card-head"><div><h3>Jadwal Penyusutan</h3><p>Proyeksi beban dan akumulasi penyusutan per aset</p></div></div>
+          <div id="assetScheduleTable"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 13: COA (Chart of Accounts) -->
+      <section id="coa" class="page">
+        <div class="card">
+          <div class="toolbar">
+            <button class="btn primary" onclick="openAccount()">+ Tambah Akun</button>
+            <button class="btn" onclick="exportCOAJSON()">Export JSON</button>
+            <button class="btn" onclick="exportCOACSV()">Export CSV</button>
+            <button class="btn" onclick="exportCurrentReportExcel('coaTable','COA Akun')">Excel</button>
+            <button class="btn" onclick="exportCurrentReportPDF('coaTable','COA Akun')">PDF</button>
+            <button class="btn good" onclick="downloadCOATemplate()">Template CSV</button>
+            <button class="btn" onclick="document.getElementById('coaImportFile').click()">Import Akun</button>
+            <input id="coaImportFile" type="file" accept=".csv,.json" hidden>
+            <input id="coaSearch" placeholder="Cari kode/nama akun..." oninput="renderCOA()">
+            <select id="coaType" onchange="renderCOA()">
+              <option value="">Semua tipe</option>
+              <option>Asset</option>
+              <option>Liability</option>
+              <option>Equity</option>
+              <option>Revenue</option>
+              <option>Expense</option>
+            </select>
+          </div>
+          <div class="notice">COA terkelola penuh: tambah, edit kode/nama/tipe/posting status, hapus aman dengan pengalihan otomatis bila telah dipakai jurnal.</div>
+          <div id="coaTable" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 14: Pengaturan -->
+      <section id="settings" class="page">
+        <div class="grid g2">
+          <div class="card form">
+            <h3>Identitas Entitas</h3>
+            <div class="field"><label>Nama Entitas / Yayasan</label><input id="setName"></div>
+            <div class="field"><label>Periode Pelaporan Aktif</label><input id="setPeriod" type="month"></div>
+            <div class="field"><label>Pilar Standar Akuntansi</label>
+              <select id="setStandard">
+                <option>SAK Entitas Privat (EP)</option>
+                <option>SAK Indonesia</option>
+                <option>SAK EMKM</option>
+                <option>SAK Internasional</option>
+              </select>
+            </div>
+            <button class="btn primary" onclick="saveSettings()">Simpan Pengaturan</button>
+          </div>
+          <div class="card">
+            <h3>Keamanan & Pengguna</h3>
+            <p style="font-size:13px;color:#667085">Kelola username dan password akun aktif.</p>
+            <button class="btn primary" onclick="openPassword()">Ubah Username / Password</button>
+            <hr style="margin:16px 0;border:0;border-top:1px solid #e4e9f0">
+            <h3>Koneksi Database MySQL</h3>
+            <p id="dbStatusDetail" style="font-size:13px;color:#667085;margin-bottom:12px">Memeriksa status database...</p>
+            <button class="btn good" onclick="syncLocalToMySql()">⇧ Migrasikan Data Local ke MySQL</button>
+            <hr style="margin:16px 0;border:0;border-top:1px solid #e4e9f0">
+            <h3>Pemeriksaan & Pemeliharaan Database</h3>
+            <p style="font-size:13px;color:#667085">Validasi persamaan akuntansi dan integritas kode akun.</p>
+            <button class="btn good" onclick="runAccountingIntegrityCheck()">Periksa Integritas Akuntansi</button>
+            <button class="btn danger" style="margin-left:8px" onclick="resetData()">Reset Seluruh Data</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 15: Export & Import Center -->
+      <section id="exports" class="page">
+        <div class="dash-head">
+          <div>
+            <div class="dash-kicker">AL BAYAN HIDAYATULLAH MAKASSAR</div>
+            <h2>PUSAT EXPORT / IMPORT LAPORAN</h2>
+            <p>Export seluruh laporan keuangan ke Excel multi-sheet/PDF dan backup/restore database lokal.</p>
+          </div>
+        </div>
+        <div class="grid g3 section">
+          <div class="card">
+            <h3>Excel Workbook</h3>
+            <p style="font-size:12px;color:#667085;margin-bottom:14px">Workbook multi-sheet berisi seluruh laporan dan data master.</p>
+            <div class="toolbar">
+              <button class="btn primary" onclick="exportAllReportsExcel()">⇩ Export Semua Excel</button>
+              <button class="btn" onclick="document.getElementById('excelImportFile').click()">⇧ Import Excel</button>
+              <input id="excelImportFile" type="file" accept=".xls,.csv" hidden>
+            </div>
+          </div>
+          <div class="card">
+            <h3>PDF Dokumen Laporan</h3>
+            <p style="font-size:12px;color:#667085;margin-bottom:14px">Seluruh laporan digabung dalam tata letak A4 landscape siap cetak.</p>
+            <div class="toolbar">
+              <button class="btn primary" onclick="exportAllReportsPDF()">⇩ Export Semua PDF</button>
+              <button class="btn" onclick="document.getElementById('pdfImportFile').click()">⇧ Import PDF</button>
+              <input id="pdfImportFile" type="file" accept="application/pdf,.pdf" hidden>
+            </div>
+            <small style="color:#667085">PDF adalah format publikasi/arsip, bukan database relasional.</small>
+          </div>
+          <div class="card">
+            <h3>Backup Sistem (JSON)</h3>
+            <p style="font-size:12px;color:#667085;margin-bottom:14px">Menyimpan struktur database lengkap untuk cadangan atau migrasi perangkat.</p>
+            <div class="toolbar">
+              <button class="btn good" onclick="exportData()">⇩ Backup JSON</button>
+              <button class="btn" onclick="document.getElementById('importFile').click()">⇧ Restore JSON</button>
+            </div>
+          </div>
+        </div>
+        <div class="card section">
+          <div class="card-head">
+            <div>
+              <h3>Daftar Laporan yang Diekspor</h3>
+              <p>Neraca Saldo • Laba Rugi • Neraca Posisi Keuangan • Arus Kas • Perubahan Ekuitas • Jurnal Umum • Buku Besar • Kas & Bank • Anggaran vs Realisasi • Manajemen Aset • COA</p>
+            </div>
+          </div>
+          <div id="exportReportStatus" class="notice">
+            Export Excel menghasilkan dokumen berformat workbook dengan sheet terpisah untuk setiap laporan dan data master.
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Global Modal Container -->
+  <div class="modal" id="modal">
+    <div class="modalbox" id="modalBox"></div>
+  </div>
+
+  <!-- Clean Architecture Scripts Loading -->
+  <!-- 1. Utility Helpers -->
+  <script src="src/ui/utils.js"></script>
+
+  <!-- 2. Domain Models & Enterprise Business Logic -->
+  <script src="src/domain/models.js"></script>
+  <script src="src/domain/AccountingEngine.js"></script>
+  <script src="src/domain/DepreciationEngine.js"></script>
+
+  <!-- 3. Repositories / Data Access Layer -->
+  <script src="src/repositories/ApiRepository.js"></script>
+  <script src="src/repositories/StorageRepository.js"></script>
+  <script src="src/repositories/ExportImportRepository.js"></script>
+
+  <!-- 4. Application Use Cases -->
+  <script src="src/usecases/AuthUseCase.js"></script>
+  <script src="src/usecases/JournalUseCase.js"></script>
+  <script src="src/usecases/BudgetUseCase.js"></script>
+  <script src="src/usecases/AssetUseCase.js"></script>
+  <script src="src/usecases/CoaUseCase.js"></script>
+
+  <!-- 5. UI Views / Presentation Layer -->
+  <script src="src/ui/views/DashboardView.js"></script>
+  <script src="src/ui/views/BudgetView.js"></script>
+  <script src="src/ui/views/AssetView.js"></script>
+  <script src="src/ui/views/JournalView.js"></script>
+  <script src="src/ui/views/LedgerView.js"></script>
+  <script src="src/ui/views/CashView.js"></script>
+  <script src="src/ui/views/ReportsView.js"></script>
+  <script src="src/ui/views/CoaView.js"></script>
+  <script src="src/ui/views/EvaluationView.js"></script>
+  <script src="src/ui/views/SettingsView.js"></script>
+  <script src="src/ui/views/ExportsView.js"></script>
+
+  <!-- 6. Application Bootstrapper & Router -->
+  <script src="src/app.js"></script>
+</body>
+</html>

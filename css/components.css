@@ -1,0 +1,277 @@
+/**
+ * AL BAYAN HIDAYATULLAH MAKASSAR — UI Components
+ */
+
+/* Grid System */
+.grid {
+  display: grid;
+  gap: 14px;
+}
+.g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+@media (max-width: 1000px) {
+  .g4 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .g4, .g2 { grid-template-columns: 1fr; }
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid var(--line-strong);
+  color: var(--ab-ink);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.btn:hover {
+  background: #f8fafc;
+  border-color: #b0bac9;
+}
+.btn.primary {
+  background: var(--primary-gradient);
+  color: #ffffff;
+  border: 0;
+  box-shadow: 0 4px 14px rgba(23, 105, 170, 0.25);
+}
+.btn.primary:hover {
+  opacity: 0.94;
+  transform: translateY(-1px);
+}
+.btn.good {
+  background: var(--good-bg);
+  color: var(--good);
+  border-color: var(--good-border);
+}
+.btn.good:hover {
+  background: #d1fadf;
+}
+.btn.danger {
+  background: var(--bad-bg);
+  color: var(--bad);
+  border-color: var(--bad-border);
+}
+.btn.danger:hover {
+  background: #fee4e2;
+}
+
+/* Cards & Containers */
+.card {
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid var(--ab-line);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.card-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ab-navy);
+}
+.card-head p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.section {
+  margin-top: 18px;
+}
+.section h3 {
+  margin: 0 0 12px;
+}
+
+/* Metric Cards */
+.metric .label {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.metric .value {
+  font-size: 26px;
+  font-weight: 900;
+  margin: 8px 0;
+  color: var(--ab-navy);
+}
+.metric .sub {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Forms & Inputs */
+.form label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #344054;
+  margin-bottom: 6px;
+}
+.form .field {
+  margin-bottom: 12px;
+}
+.form input, .form select, .form textarea,
+.toolbar input, .toolbar select {
+  padding: 9px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ab-ink);
+  width: 100%;
+  font-size: 13px;
+  transition: border-color 0.15s ease;
+}
+.form input:focus, .form select:focus, .form textarea:focus,
+.toolbar input:focus, .toolbar select:focus {
+  outline: none;
+  border-color: var(--ab-blue);
+  box-shadow: 0 0 0 3px rgba(23, 105, 170, 0.12);
+}
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.toolbar input, .toolbar select {
+  width: auto;
+  min-width: 180px;
+}
+
+/* Tables */
+.tablewrap {
+  overflow-x: auto;
+  width: 100%;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.table th, .table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+.table th {
+  background: #f3f7fa;
+  color: #52667a;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.table tr:hover td {
+  background: #f8fbfd;
+}
+.num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Badges & Pills */
+.pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.pill.good { background: var(--good-bg); color: var(--good); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+.pill.bad { background: var(--bad-bg); color: var(--bad); }
+
+.mini-badge {
+  font-size: 9px;
+  font-weight: 800;
+  color: var(--ab-blue);
+  background: var(--primary-light);
+  border: 1px solid var(--primary-border);
+  border-radius: 999px;
+  padding: 4px 8px;
+  letter-spacing: 0.05em;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 7px;
+}
+.status-dot.good { background: #2e9d68; }
+.status-dot.warn { background: #c99a3b; }
+.status-dot.bad { background: #c84c4c; }
+
+/* Alerts & Notices */
+.notice {
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: #eff8ff;
+  border: 1px solid #d1e9ff;
+  color: #175cd3;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 10px 0;
+}
+.empty {
+  padding: 36px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+.account-integrity-note {
+  font-size: 12px;
+  padding: 10px 12px;
+  border: 1px solid #dbe4ef;
+  border-radius: 10px;
+  background: #f8fafc;
+  margin: 8px 0;
+}
+
+/* Journal Entry Rows */
+.jrow {
+  display: grid;
+  grid-template-columns: 140px 1fr 150px 150px 42px;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+.journal-total {
+  display: flex;
+  justify-content: flex-end;
+  gap: 30px;
+  font-weight: 800;
+  padding: 14px 0;
+  font-size: 14px;
+  border-top: 1px solid var(--line);
+  margin-top: 12px;
+}
+
+@media (max-width: 1000px) {
+  .jrow {
+    grid-template-columns: 1fr 1fr;
+  }
+  .jrow > *:nth-child(3), .jrow > *:nth-child(4) {
+    grid-column: span 1;
+  }
+}

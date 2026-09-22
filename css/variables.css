@@ -1,0 +1,53 @@
+/**
+ * AL BAYAN HIDAYATULLAH MAKASSAR — Design Tokens
+ * Clean Architecture - Presentation Layer Styles
+ */
+:root {
+  /* Core Color Palette */
+  --bg: #f4f7fb;
+  --bg-gradient: linear-gradient(180deg, #f5f8fb 0%, #eef3f8 100%);
+  --card: #ffffff;
+  --text: #182230;
+  --muted: #667085;
+  --line: #e4e9f0;
+  --line-strong: #d0d5dd;
+
+  /* Brand Accents */
+  --primary: #1769aa;
+  --primary2: #102a43;
+  --primary-gradient: linear-gradient(135deg, #1769aa, #148f8a);
+  --primary-light: #edf6ff;
+  --primary-border: #cfe2f5;
+  
+  /* Status Colors */
+  --good: #087443;
+  --good-bg: #ecfdf3;
+  --good-border: #abefc6;
+  --bad: #b42318;
+  --bad-bg: #fff1f0;
+  --bad-border: #ffd5d2;
+  --warn: #b54708;
+  --warn-bg: #fffaeb;
+  --warn-border: #fedf89;
+
+  /* Specialized Al Bayan Palette */
+  --ab-navy: #102a43;
+  --ab-blue: #1769aa;
+  --ab-sky: #3b82c4;
+  --ab-teal: #148f8a;
+  --ab-green: #2e9d68;
+  --ab-gold: #c99a3b;
+  --ab-ink: #172b4d;
+  --ab-muted: #6b7c93;
+  --ab-line: #e4eaf1;
+  --ab-soft: #f5f8fb;
+  --ab-white: #ffffff;
+
+  /* Shadows & Radius */
+  --shadow: 0 10px 30px rgba(16, 24, 40, 0.07);
+  --shadow-sm: 0 4px 18px rgba(16, 42, 67, 0.04);
+  --shadow-lg: 0 16px 38px rgba(16, 42, 67, 0.18);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+}
