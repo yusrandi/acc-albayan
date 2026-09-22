@@ -9,7 +9,25 @@ window.App.Repositories = window.App.Repositories || {};
   const getApiBase = () => {
     if (window.__API_URL__) return window.__API_URL__;
     const { protocol, hostname, port } = window.location;
-    if (port === '3001' || port === '' || port === '80' || port === '443') {
+
+    // 1. Jika diakses melalui domain production accalbayan.com
+    if (hostname === 'accalbayan.com' || hostname === 'www.accalbayan.com') {
+      return `${protocol}//api.accalbayan.com/api`;
+    }
+    if (hostname === 'api.accalbayan.com') {
+      return `${protocol}//api.accalbayan.com/api`;
+    }
+
+    // 2. Jika diakses di lokal / development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return (port === '3001') ? '/api' : `${protocol}//${hostname}:3001/api`;
+    }
+
+    // 3. Jika diakses via IP VPS langsung (misal: http://103.xxx.xxx.xxx:3001)
+    if (port === '3001') return '/api';
+
+    // 4. Default fallback
+    if (port === '' || port === '80' || port === '443') {
       return '/api';
     }
     return `${protocol}//${hostname}:3001/api`;
